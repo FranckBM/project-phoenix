@@ -1,0 +1,24 @@
+title: Registry Run Key Persistence via Sysmon
+id: 8f3a2e10-6b4c-4e91-9a2d-1c7f5e8b3d4a
+status: experimental
+description: Detects creation or modification of registry Run/RunOnce keys, a common persistence technique used by malware and adversaries to survive reboot
+references:
+    - https://attack.mitre.org/techniques/T1547/001/
+author: Franck
+date: 2026-08-06
+tags:
+    - attack.persistence
+    - attack.privilege-escalation
+    - attack.t1547.001
+logsource:
+    category: registry_event
+    product: windows
+detection:
+    selection:
+        EventID: 13
+        TargetObject|contains: '\CurrentVersion\Run\'
+    condition: selection
+falsepositives:
+    - Legitimate software installers that register startup entries
+    - IT-managed software deployment tools
+level: medium
