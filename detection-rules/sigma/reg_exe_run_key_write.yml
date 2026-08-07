@@ -1,0 +1,32 @@
+title: Registry Run Key Modification via reg.exe
+id: 9a1f4b73-2e6c-4d18-b8a5-3c7e9f2d1a64
+status: experimental
+description: |
+    Detects the command-line utility reg.exe being used to write a value into a registry Run key.
+    Legitimate software installers typically register startup entries via Windows APIs directly rather
+    than shelling out to reg.exe, so this is a narrower, higher-fidelity signal than any write to a Run
+    key (see registry_run_key_persistence.yml) — it specifically flags a common living-off-the-land
+    technique where scripts or attackers use a built-in Windows binary to establish persistence.
+references:
+    - https://attack.mitre.org/techniques/T1547/001/
+    - https://attack.mitre.org/techniques/T1112/
+author: Franck
+date: 2026-08-07
+tags:
+    - attack.persistence
+    - attack.defense-evasion
+    - attack.t1547.001
+    - attack.t1112
+logsource:
+    category: registry_event
+    product: windows
+detection:
+    selection_image:
+        Image|endswith: '\reg.exe'
+    selection_target:
+        TargetObject|contains: '\CurrentVersion\Run\'
+    condition: selection_image and selection_target
+falsepositives:
+    - IT-managed deployment scripts or Group Policy startup scripts that use reg.exe intentionally
+    - Legacy software installers that shell out to reg.exe instead of using native registry APIs
+level: high
