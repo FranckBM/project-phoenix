@@ -1,0 +1,31 @@
+title: PowerShell Execution with Hidden Window
+id: 4d7e9c21-3a8f-4b6e-9c1a-7f2e5d8b3a91
+status: experimental
+description: |
+    Detects PowerShell execution with a command line referencing a hidden window ('hidden' near a window-style-like flag).
+    Deliberately matches on the word 'hidden' rather than an exact '-WindowStyle' spelling, since command-line flags
+    are trivially typo'd or obfuscated (observed in this lab: '-WindowSytle hidden', a misspelled variant that a
+    strict '-WindowStyle' string match would silently miss).
+references:
+    - https://attack.mitre.org/techniques/T1564/003/
+    - https://attack.mitre.org/techniques/T1059/001/
+author: Franck
+date: 2026-08-07
+tags:
+    - attack.defense-evasion
+    - attack.execution
+    - attack.t1564.003
+    - attack.t1059.001
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_image:
+        Image|endswith: '\powershell.exe'
+    selection_hidden:
+        CommandLine|contains: 'hidden'
+    condition: selection_image and selection_hidden
+falsepositives:
+    - Legitimate scheduled tasks or automation scripts that intentionally suppress the console window
+    - IT-managed deployment or maintenance scripts
+level: medium
