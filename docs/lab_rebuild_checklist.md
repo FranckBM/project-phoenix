@@ -84,6 +84,29 @@ Full known-good config template: `docs/winlogbeat-template.yml` in this repo.
 
 ## 5. Atomic Red Team
 
+**Before installing:** fresh Windows installs default to a restrictive
+PowerShell execution policy that blocks the `powershell-yaml` module and
+Atomic's own test scripts from running at all — fails with
+`"running scripts is disabled on this system"`. Fix this first, as
+Administrator:
+
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+Confirm with `A` (Yes to All) when prompted. `RemoteSigned` is a reasonable
+default for an isolated lab VM built specifically for running attack
+simulation scripts.
+
+If the install is attempted before this fix and fails partway through, it
+can leave a broken partial install behind (`Install-AtomicRedTeam` will
+report "already exists" on retry even though it didn't finish). Force a
+clean reinstall once the execution policy is fixed:
+
+```powershell
+Install-AtomicRedTeam -getAtomics -Force
+```
+
 ```powershell
 Install-Module -Name invoke-atomicredteam,powershell-yaml -Scope CurrentUser
 
