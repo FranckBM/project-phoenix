@@ -1,0 +1,49 @@
+# =============================================================================
+# Project Phoenix — Winlogbeat config template (sanitized, known-working)
+# Last confirmed working: 2026-08-07, against Elastic serverless project
+#
+# BEFORE USE:
+#   1. Replace YOUR_ELASTIC_ENDPOINT below with your actual serverless endpoint.
+#   2. Generate a fresh API key in Kibana (Stack Management > API keys),
+#      using the "Beats" format specifically — NOT "Encoded". Beats format
+#      looks like: id:secret  (two parts separated by one colon).
+#   3. Paste that Beats-format key into api_key below.
+#
+# KNOWN GOTCHAS (cost real debugging time — don't repeat these):
+#   - Elastic SERVERLESS projects use port 443, NOT the classic 9200.
+#     The hosts line below MUST include :443 or you'll get
+#     "dial tcp ... actively refused it".
+#   - Kibana's API key screen offers 3 formats: Encoded / Beats / Logstash.
+#     Winlogbeat needs "Beats" specifically. Encoded gives a 401
+#     "invalid ApiKey value" error that looks like a wrong key but isn't.
+#   - Double-check there's no stray trailing character (e.g. a copy-pasted
+#     "]") on the event_logs channel name below — a malformed channel name
+#     fails SILENTLY (no error, just zero events forever). If Winlogbeat
+#     runs but received_events_count stays at 0 in the periodic metrics
+#     logs, check this line character-by-character first.
+# =============================================================================
+
+winlogbeat.event_logs:
+  - name: Microsoft-Windows-Sysmon/Operational
+
+setup.template.settings:
+  index.number_of_shards: 1
+
+setup.template.enabled: false
+
+output.elasticsearch:
+  hosts: ["YOUR_ELASTIC_ENDPOINT_HERE:443"]
+
+  api_key: "PASTE_BEATS_FORMAT_KEY_HERE"
+  #username: "elastic"
+  #password: "changeme"
+
+  #pipeline: "winlogbeat-%{[agent.version]}-routing"
+  # ^ leave commented out — this references an ingest pipeline that doesn't
+  #   exist in a standalone Winlogbeat setup (no Fleet/Elastic Agent), and
+  #   will silently drop or reject events if enabled.
+
+processors:
+  - add_host_metadata:
+      when.not.contains.tags: forwarded
+  - add_cloud_metadata: ~
