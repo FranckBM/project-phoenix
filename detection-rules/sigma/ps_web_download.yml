@@ -1,0 +1,32 @@
+title: PowerShell Web Download Cradle
+id: 31c929ea-e3a7-488f-8b43-f3179abcdf52
+status: experimental
+description: Detects PowerShell being used to download content from the web, a common stager/dropper technique
+references:
+    - https://attack.mitre.org/techniques/T1059/001/
+    - https://attack.mitre.org/techniques/T1105/
+author: Franck B.
+date: 2026-08-11
+tags:
+    - attack.execution
+    - attack.t1059.001
+    - attack.command-and-control
+    - attack.t1105
+logsource:
+    product: windows
+    category: ps_script
+    definition: 'Requires PowerShell Script Block Logging (Event ID 4104) to be enabled'
+detection:
+    selection:
+        ScriptBlockText|contains:
+            - 'Invoke-WebRequest'
+            - 'iwr '
+            - 'wget '
+            - 'Net.WebClient'
+            - 'DownloadString'
+            - 'DownloadFile'
+            - 'Start-BitsTransfer'
+    condition: selection
+falsepositives:
+    - Legitimate admin scripting/automation using PowerShell download cmdlets
+level: high
