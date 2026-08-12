@@ -1,0 +1,25 @@
+title: Data Archive for Potential Exfil
+id: 31c929ea-e3a7-488f-8b43-f3179abcdf52
+status: experimental
+description: Detects .zip files created by powershell.exe in Windows\Temp, a common data staging location ahead of exfiltration.
+references:
+    - TCM Security Detection Engineering for Beginners course
+author: Franck B. (converted from TCM prebuilt Kibana rule)
+date: 2026-08-12
+tags:
+    - attack.collection
+    - attack.t1074
+    - attack.t1074.001
+logsource:
+    product: windows
+    category: file_event
+detection:
+    selection_img:
+        Image|endswith: '\powershell.exe'
+    selection_file:
+        TargetFilename|contains: '\Windows\Temp\'
+        TargetFilename|endswith: '.zip'
+    condition: selection_img and selection_file
+falsepositives:
+    - Legitimate PowerShell-based backup or packaging scripts writing to Temp
+level: low
