@@ -1,5 +1,5 @@
 title: PowerShell Web Download Cradle
-id: 31c929ea-e3a7-488f-8b43-f3179abcdf52
+id: d8337db3-2493-4120-8126-bef4780075cd
 status: experimental
 description: Detects PowerShell being used to download content from the web, a common stager/dropper technique
 references:

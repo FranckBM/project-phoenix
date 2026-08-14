@@ -1,0 +1,14 @@
+=== Issues ===
+issue=InvalidATTACKTagIssue severity=medium description=Invalid MITRE ATT&CK tagging rule=C:\Users\fmana\Desktop\Project-Phoenix\detection-rules\sigma\powershell_hidden_window.yml tag=attack.defense-evasion
+
+=== Summary ===
+Found 0 errors, 0 condition errors and 1 issues.
+No rule errors found.
+No condition errors found.
+
+Validation issue summary:
++-------+-----------------------+----------+------------------------------+
+| Count | Issue                 | Severity | Description                  |
++-------+-----------------------+----------+------------------------------+
+| 1     | InvalidATTACKTagIssue | MEDIUM   | Invalid MITRE ATT&CK tagging |
++-------+-----------------------+----------+------------------------------+

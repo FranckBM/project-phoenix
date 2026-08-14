@@ -1,0 +1,37 @@
+name: Sigma Rule Validation
+
+on:
+  push:
+    paths:
+      - 'detection-rules/sigma/**.yml'
+  pull_request:
+    paths:
+      - 'detection-rules/sigma/**.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install sigma-cli
+        run: pip install sigma-cli
+
+      - name: Install Elasticsearch backend
+        run: sigma plugin install elasticsearch
+
+      - name: Validate Sigma rules
+        run: sigma check detection-rules/sigma -x attacktag
+
+      - name: Confirm rules convert cleanly
+        run: |
+          for file in detection-rules/sigma/*.yml; do
+            echo "Converting: $file"
+            sigma convert -t lucene --without-pipeline "$file" > /dev/null
+          done

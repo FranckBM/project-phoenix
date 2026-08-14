@@ -1,5 +1,5 @@
 title: Windows Defender Real-Time Protection Disabled via PowerShell
-id: 31c929ea-e3a7-488f-8b43-f3179abcdf52
+id: 4078c898-12da-488b-808d-5b635e1331f9
 status: experimental
 description: Detects use of the Set-MpPreference cmdlet to disable Windows Defender real-time monitoring, a common defense evasion step before dropping malicious payloads.
 references:
@@ -7,7 +7,7 @@ references:
 author: Franck B.
 date: 2026-08-13
 tags:
-    - attack.defense-evasion
+    - attack.defense_evasion
     - attack.t1562.001
 logsource:
     product: windows

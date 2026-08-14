@@ -1,15 +1,15 @@
-title: Data Archive for Potential Exfil
-id: dc87f31b-bf15-44d5-bda5-c04387055258
+title: Suspicious File Written to Temp Directory
+id: 31c929ea-e3a7-488f-8b43-f3179abcdf52
 status: experimental
-description: Detects .zip files created by powershell.exe in Windows\Temp, a common data staging location ahead of exfiltration.
+description: Detects PowerShell writing a .ps1 file to Windows\Temp, often indicative of a staged secondary payload or dropped script.
 references:
     - TCM Security Detection Engineering for Beginners course
 author: Franck B. (converted from TCM prebuilt Kibana rule)
-date: 2026-08-12
+date: 2026-08-14
 tags:
-    - attack.collection
-    - attack.t1074
-    - attack.t1074.001
+    - attack.discovery
+    - attack.t1082
+    - attack.t1217
 logsource:
     product: windows
     category: file_event
@@ -18,8 +18,8 @@ detection:
         Image|endswith: '\powershell.exe'
     selection_file:
         TargetFilename|contains: '\Windows\Temp\'
-        TargetFilename|endswith: '.zip'
+        TargetFilename|endswith: '.ps1'
     condition: selection_img and selection_file
 falsepositives:
-    - Legitimate PowerShell-based backup or packaging scripts writing to Temp
+    - Legitimate PowerShell automation scripts staged in Temp by IT tooling
 level: low

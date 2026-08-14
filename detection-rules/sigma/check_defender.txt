@@ -1,0 +1,15 @@
+=== Issues ===
+issue=InvalidATTACKTagIssue severity=medium description=Invalid MITRE ATT&CK tagging rule=C:\Users\fmana\Desktop\Project-Phoenix\detection-rules\sigma\defender_tamper.yml tag=attack.defense-evasion
+issue=InvalidATTACKTagIssue severity=medium description=Invalid MITRE ATT&CK tagging rule=C:\Users\fmana\Desktop\Project-Phoenix\detection-rules\sigma\defender_tamper.yml tag=attack.t1562.001
+
+=== Summary ===
+Found 0 errors, 0 condition errors and 2 issues.
+No rule errors found.
+No condition errors found.
+
+Validation issue summary:
++-------+-----------------------+----------+------------------------------+
+| Count | Issue                 | Severity | Description                  |
++-------+-----------------------+----------+------------------------------+
+| 2     | InvalidATTACKTagIssue | MEDIUM   | Invalid MITRE ATT&CK tagging |
++-------+-----------------------+----------+------------------------------+
