@@ -1,0 +1,69 @@
+
+
+TimeCreated : 8/18/2026 4:12:35 PM
+Id          : 13
+Message     : Registry value set:
+              RuleName: T1042
+              EventType: SetValue
+              UtcTime: 2026-08-18 15:12:35.001
+              ProcessGuid: {652e9b1e-74ff-6a84-7d00-000000000d00}
+              ProcessId: 5444
+              Image: C:\WINDOWS\Explorer.EXE
+              TargetObject: HKU\S-1-5-21-2419249260-3071802958-725696840-1000\Software\Microsoft\Windows\CurrentVersion\Explorer\Fil
+              eExts\.exe\OpenWithProgids\exefile
+              Details: Binary Data
+              User: WIN11-REBUILD\vboxuser
+
+TimeCreated : 8/18/2026 4:11:10 PM
+Id          : 13
+Message     : Registry value set:
+              RuleName: Suspicious,ImageBeginWithBackslash
+              EventType: SetValue
+              UtcTime: 2026-08-18 15:11:10.508
+              ProcessGuid: {652e9b1e-75d2-6a84-1d01-000000000d00}
+              ProcessId: 5328
+              Image: \\?\C:\WINDOWS\system32\wbem\WMIADAP.EXE
+              TargetObject: HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Notifications\Data\418A073AA3BC1C75
+              Details: Binary Data
+              User: NT AUTHORITY\SYSTEM
+
+TimeCreated : 8/18/2026 4:11:10 PM
+Id          : 13
+Message     : Registry value set:
+              RuleName: Suspicious,ImageBeginWithBackslash
+              EventType: SetValue
+              UtcTime: 2026-08-18 15:11:10.507
+              ProcessGuid: {652e9b1e-75d2-6a84-1d01-000000000d00}
+              ProcessId: 5328
+              Image: \\?\C:\WINDOWS\system32\wbem\WMIADAP.EXE
+              TargetObject: HKLM\SOFTWARE\Microsoft\Wbem\PROVIDERS\Performance\Performance Refreshed
+              Details: DWORD (0x00000001)
+              User: NT AUTHORITY\SYSTEM
+
+TimeCreated : 8/18/2026 4:11:10 PM
+Id          : 13
+Message     : Registry value set:
+              RuleName: Suspicious,ImageBeginWithBackslash
+              EventType: SetValue
+              UtcTime: 2026-08-18 15:11:10.507
+              ProcessGuid: {652e9b1e-75d2-6a84-1d01-000000000d00}
+              ProcessId: 5328
+              Image: \\?\C:\WINDOWS\system32\wbem\WMIADAP.EXE
+              TargetObject: HKLM\SOFTWARE\Microsoft\Wbem\PROVIDERS\Performance\Performance Refresh
+              Details: DWORD (0x00000000)
+              User: NT AUTHORITY\SYSTEM
+
+TimeCreated : 8/18/2026 4:11:10 PM
+Id          : 13
+Message     : Registry value set:
+              RuleName: Suspicious,ImageBeginWithBackslash
+              EventType: SetValue
+              UtcTime: 2026-08-18 15:11:10.507
+              ProcessGuid: {652e9b1e-75d2-6a84-1d01-000000000d00}
+              ProcessId: 5328
+              Image: \\?\C:\WINDOWS\system32\wbem\WMIADAP.EXE
+              TargetObject: HKLM\SOFTWARE\Microsoft\Wbem\WDM\DREDGE\C:\WINDOWS\System32\Drivers\portcls.SYS[PortclsMof]
+              Details: LowDateTime:2025262184,HighDateTime:31271563***Binary mof compiled successfully
+              User: NT AUTHORITY\SYSTEM
+
+
