@@ -1,12 +1,12 @@
-title: Microsoft Office Application Spawning PowerShell
+title: Office Application Spawning PowerShell
 id:  1e524c83-38d5-440d-b248-67ab9b209473
 status: experimental
-description: Detects a Microsoft Office application (Word, Excel, PowerPoint) spawning PowerShell, a common macro-based execution technique.
+description: Detects a Microsoft Office or LibreOffice application spawning PowerShell, a common macro-based execution technique.
 references:
     - https://attack.mitre.org/techniques/T1059/001/
     - https://attack.mitre.org/techniques/T1204/002/
 author: Franck B.
-date: 2026-08-14
+date: 2026-08-20
 tags:
     - attack.execution
     - attack.t1059.001
@@ -20,11 +20,12 @@ detection:
             - '\winword.exe'
             - '\excel.exe'
             - '\powerpnt.exe'
+            - '\soffice.bin'
     selection_child:
         Image|endswith:
             - '\powershell.exe'
             - '\pwsh.exe'
     condition: selection_parent and selection_child
 falsepositives:
-    - Legitimate Office add-ins or automation scripts that shell out to PowerShell (uncommon in most environments)
+    - Legitimate Office/LibreOffice add-ins or automation scripts that shell out to PowerShell (uncommon in most environments)
 level: high
