@@ -1,0 +1,27 @@
+title: SMB Admin Share Access via net.exe
+id: bd28b8c2-8645-42ab-8a86-82a3df5ecfd5
+status: experimental
+description: Detects use of net.exe or net1.exe to connect to Windows administrative shares (C$, ADMIN$, IPC$), a common lateral movement technique
+references:
+  - https://attack.mitre.org/techniques/T1021/002/
+author: Franck B.
+date: 2026-09-01
+tags:
+  - attack.lateral_movement
+  - attack.t1021.002
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    Image|endswith:
+      - '\net.exe'
+      - '\net1.exe'
+    CommandLine|contains:
+      - '\C$'
+      - '\ADMIN$'
+      - '\IPC$'
+  condition: selection
+falsepositives:
+  - Legitimate administrative scripts or backup tools accessing admin shares
+level: medium
