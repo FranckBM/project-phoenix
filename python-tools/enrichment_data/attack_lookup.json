@@ -1,0 +1,50 @@
+{
+    "T1547.001": {
+        "technique_name": "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder",
+        "tactics": ["Persistence", "Privilege Escalation"]
+    },
+    "T1564.003": {
+        "technique_name": "Hide Artifacts: Hidden Window",
+        "tactics": ["Defense Evasion"]
+    },
+    "T1059.001": {
+        "technique_name": "Command and Scripting Interpreter: PowerShell",
+        "tactics": ["Execution"]
+    },
+    "T1112": {
+        "technique_name": "Modify Registry",
+        "tactics": ["Defense Evasion"]
+    },
+    "T1105": {
+        "technique_name": "Ingress Tool Transfer",
+        "tactics": ["Command and Control"]
+    },
+    "T1074.001": {
+        "technique_name": "Data Staged: Local Data Staging",
+        "tactics": ["Collection"]
+    },
+    "T1562.001": {
+        "technique_name": "Impair Defenses: Disable or Modify Tools",
+        "tactics": ["Defense Evasion"]
+    },
+    "T1053.005": {
+        "technique_name": "Scheduled Task/Job: Scheduled Task",
+        "tactics": ["Execution", "Persistence", "Privilege Escalation"]
+    },
+    "T1204.002": {
+        "technique_name": "User Execution: Malicious File",
+        "tactics": ["Execution"]
+    },
+    "T1082": {
+        "technique_name": "System Information Discovery",
+        "tactics": ["Discovery"]
+    },
+    "T1217": {
+        "technique_name": "Browser Information Discovery",
+        "tactics": ["Discovery"]
+    },
+    "T1021.002": {
+        "technique_name": "Remote Services: SMB/Windows Admin Shares",
+        "tactics": ["Lateral Movement"]
+    }
+}

@@ -1,0 +1,22 @@
+{
+    "hosts": {
+        "WIN11-REBUILD": {
+            "owner": "Franck (lab VM)",
+            "criticality": "low",
+            "environment": "home-lab",
+            "notes": "Primary detection engineering lab target VM"
+        }
+    },
+    "users": {
+        "vboxuser": {
+            "role": "lab test account",
+            "privilege_level": "local admin",
+            "notes": "Used for Atomic Red Team test execution; not a real production identity"
+        },
+        "WIN11-REBUILD$": {
+            "role": "machine account",
+            "privilege_level": "system",
+            "notes": "Standard Windows computer account, expected in service/logon noise"
+        }
+    }
+}

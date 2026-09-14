@@ -1,0 +1,10 @@
+{
+    "timestamp": "2026-09-01T14:39:36.804+0100",
+    "rule_name": "SMB Admin Share Access via net.exe",
+    "technique_id": "T1021.002",
+    "severity": "medium",
+    "host": "WIN11-REBUILD",
+    "user": "vboxuser",
+    "process_image": "C:\\Windows\\System32\\net.exe",
+    "command_line": "net use \\\\localhost\\C$ NewPassword123 /u:WIN11-REBUILD\\vboxuser"
+}
