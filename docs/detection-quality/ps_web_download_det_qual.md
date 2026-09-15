@@ -1,0 +1,19 @@
+# Rule #4 — PowerShell Web Download Cradle — Detection Quality
+
+| Field | Detail |
+|---|---|
+| **ATT&CK technique** | T1059.001 — Command and Scripting Interpreter: PowerShell (Execution) / T1105 — Ingress Tool Transfer (Command and Control) |
+| **Telemetry** | PowerShell Script Block Logging, Event ID 4104 — `ScriptBlockText`. **Requires Script Block Logging to be enabled** — this is explicitly noted in the rule's `logsource.definition`, not an optional extra |
+| **Detection** | Sigma rule matching any of several common PowerShell download cradles inside the logged script block text: `Invoke-WebRequest`, `iwr`, `wget`, `Net.WebClient`, `DownloadString`, `DownloadFile`, `Start-BitsTransfer` |
+| **Test** | Home lab — manually invoked several of these download cradles; validated against live Script Block Logging telemetry, including a post-VM-rebuild re-hunt to confirm Script Block Logging survived the rebuild |
+| **Expected alert** | 1 alert per script block containing any matching download cradle |
+| **False positives** | Legitimate admin scripting/automation using PowerShell download cmdlets — flagged in the rule itself; genuinely common in real environments (software update scripts, deployment tooling), unlike some of the higher-confidence rules in this set |
+| **Severity** | High |
+| **Tuning** | Likely the rule in this set most in need of tuning against real noise, given how common these cmdlets are in legitimate IT automation — exclude known deployment tool script paths/hashes once a baseline exists, or correlate with destination (internal update server vs. arbitrary external URL) to separate routine patching from suspicious staging |
+| **Coverage** | This rule is the direct reason Script Block Logging was enabled in the lab at all — Sysmon Event ID 1 only captures the PowerShell **launch** command line, not code executed from within a script, so a download cradle buried inside a larger script (rather than passed as a `-Command` argument) would be invisible without this telemetry source. Does **not** cover: downloads via non-PowerShell tools (`certutil.exe`, `bitsadmin.exe` command line directly, `curl.exe`), aliased/renamed cmdlets, or heavily obfuscated/base64-encoded script blocks where these literal strings wouldn't appear in plaintext |
+| **Investigation** | Check the full script block for the download URL and destination path; check what happens to the downloaded file afterward (executed immediately, written to disk for later, added to a scheduled task); check the parent process and how the script was triggered (macro, scheduled task, interactive session); check destination URL reputation if available |
+| **Response** | If confirmed malicious: block the destination at the network layer if not already done, isolate the host, identify and remove the downloaded payload, and check for execution/persistence that followed the download |
+
+**Coverage note worth highlighting:** this rule is a good portfolio talking point precisely because it demonstrates recognizing a real telemetry blind spot (process-launch visibility vs. cmdlet-level visibility) and fixing the underlying data source, rather than just writing more rules against data that was already insufficient. Worth referencing this rule when discussing why Script Block Logging was enabled, not just listing it as a checklist item.
+
+**Note on false positives:** unlike most other rules in this set, the false-positive risk here is genuinely plausible in a real environment, not just a theoretical caveat — this is the rule most likely to need real tuning first if deployed anywhere beyond the lab.
