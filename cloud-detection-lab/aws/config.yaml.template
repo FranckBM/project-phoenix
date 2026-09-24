@@ -1,0 +1,8 @@
+inputs:
+  - type: "s3-sqs"
+    id: "arn:aws:sqs:us-east-1:951869164615:phoenix-cloudtrail-notifications"
+    outputs:
+      - type: "elasticsearch"
+        args:
+          elasticsearch_url: "https://my-security-project-edc686.es.us-central1.gcp.elastic.cloud"
+          api_key: "<YOUR_API_KEY_HERE>"
