@@ -1,5 +1,5 @@
 title: AWS Root Account Usage Detected
-id: <generate a new UUID>
+id: eee1cd54-c586-42e8-8e13-1b2163fada44
 status: experimental
 description: Detects any AWS API activity performed using the root account, which should be exceptionally rare in a well-managed environment and often indicates compromise or a break-glass emergency action.
 references:
