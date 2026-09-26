@@ -1,0 +1,25 @@
+title: AWS Root Account Usage Detected
+id: <generate a new UUID>
+status: experimental
+description: Detects any AWS API activity performed using the root account, which should be exceptionally rare in a well-managed environment and often indicates compromise or a break-glass emergency action.
+references:
+    - https://attack.mitre.org/techniques/T1078/004/
+author: Franck B.
+date: 2026-09-26
+tags:
+    - attack.initial_access
+    - attack.persistence
+    - attack.privilege_escalation
+    - attack.defense_evasion
+    - attack.t1078.004
+logsource:
+    category: cloudtrail
+    product: aws
+detection:
+    selection:
+        aws.cloudtrail.user_identity.type: 'Root'
+    condition: selection
+falsepositives:
+    - Legitimate break-glass/emergency access using the root account (should be rare and pre-planned)
+    - Initial account setup activities before IAM users/roles are configured
+level: high
