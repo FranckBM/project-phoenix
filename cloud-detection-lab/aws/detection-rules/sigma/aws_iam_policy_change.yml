@@ -1,0 +1,35 @@
+title: AWS IAM Policy Created, Attached or Modified
+id: ba56ad2a-4c43-4d9d-b933-db8d42bceb44
+status: experimental
+description: Detects IAM policy changes that can grant new permissions (creating or versioning a policy, attaching a managed policy, or writing an inline policy to a user, role or group). Attackers use these calls to escalate privileges or keep persistent access after compromising a cloud identity.
+references:
+    - https://attack.mitre.org/techniques/T1098/003/
+    - https://attack.mitre.org/techniques/T1078/004/
+author: Franck B.
+date: 2026-10-09
+tags:
+    - attack.persistence
+    - attack.privilege_escalation
+    - attack.t1098.003
+logsource:
+    product: aws
+    category: cloudtrail
+detection:
+    selection_source:
+        event.provider: 'iam.amazonaws.com'
+    selection_action:
+        event.action:
+            - 'CreatePolicy'
+            - 'CreatePolicyVersion'
+            - 'SetDefaultPolicyVersion'
+            - 'AttachUserPolicy'
+            - 'AttachRolePolicy'
+            - 'AttachGroupPolicy'
+            - 'PutUserPolicy'
+            - 'PutRolePolicy'
+            - 'PutGroupPolicy'
+    condition: selection_source and selection_action
+falsepositives:
+    - Legitimate administrators or infrastructure-as-code pipelines changing permissions as part of planned work
+    - Initial account setup before roles and policies are stable
+level: medium
