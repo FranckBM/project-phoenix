@@ -2,7 +2,7 @@
 
 - **Rule:** `aws_iam_policy_change.yml` (id `ba56ad2a-4c43-4d9d-b933-db8d42bceb44`)
 - **ATT&CK:** T1098.003 (Account Manipulation: Additional Cloud Roles)
-- **Date validated:** 2026-10-09
+- **Date validated:** 2026-10-09 (query), 2026-10-13 (live rule)
 - **Data source:** CloudTrail management events -> S3 -> SQS -> Elastic Serverless Forwarder -> `logs-aws.cloudtrail-default`
 
 ## 1. Field verification
@@ -16,7 +16,7 @@ The rule uses `event.provider` and `event.action`. These were assumed from the E
 
 Other fields seen on the parsed documents: `aws.cloudtrail.user_identity.type`, `aws.cloudtrail.flattened.response_elements` (carries the new policy ARN).
 
-## 2. Trigger test
+## 2. Trigger test (query level)
 
 Action performed in the AWS console as an IAM user:
 
@@ -37,18 +37,47 @@ event.provider: "iam.amazonaws.com" and event.action: "CreatePolicy"
 
 `DeletePolicy` is deliberately not in the rule's action list. Removing a policy does not grant access, so it should not alert.
 
-## 4. Not yet tested
+## 4. Live rule validation (Kibana Detection Engine)
 
-- The rule has not been imported into Kibana as a live Detection Engine rule, so alert generation is not yet validated, only the query logic.
+**Date:** 2026-10-13
+
+The rule was imported into Kibana as a Custom query rule and enabled.
+
+| Setting | Value |
+|---|---|
+| Index pattern | `logs-aws.cloudtrail-*` |
+| Query (KQL) | `event.provider : "iam.amazonaws.com" and event.action : (CreatePolicy or CreatePolicyVersion or SetDefaultPolicyVersion or AttachUserPolicy or AttachRolePolicy or AttachGroupPolicy or PutUserPolicy or PutRolePolicy or PutGroupPolicy)` |
+| Severity / risk score | Medium / 47 |
+| ATT&CK | T1098.003 (Persistence, Privilege Escalation) |
+| Schedule | every 5 minutes, 4 minute additional look-back |
+| Alert suppression | by `aws.cloudtrail.user_identity.arn`, per time period, 1 hour |
+
+**Test:** a harmless customer-managed policy (`s3:ListAllMyBuckets` only, not attached to any identity) was created and then deleted in the console.
+
+**Result:** 1 Medium alert (risk score 47) was created for user `AWSAdmin` on the rule's next scheduled run after the policy was created. The source event had `event.action: CreatePolicy`. The delete did not alert, as designed. `kibana.alert.suppression.docs_count` was 0, as expected for a single event.
+
+**Detection latency (single run, 2026-10-13):**
+
+| Stage | From | To | Duration |
+|---|---|---|---|
+| CloudTrail delivery and ingest pipeline | event `@timestamp` 16:24:46 | `event.created` 16:27:21 | ~2m36s |
+| Rule schedule | `event.created` 16:27:21 | alert 16:32:20 | ~4m59s |
+| **End to end** | event `@timestamp` 16:24:46 | alert 16:32:20 | **~7m35s** |
+
+The rule stage is bounded by the 5-minute schedule. The ingest stage depends on CloudTrail delivery timing and varies run to run, so this is one observation, not an average.
+
+## 5. Not yet tested
+
 - The other actions in the list (`Attach*Policy`, `Put*Policy`, `CreatePolicyVersion`, `SetDefaultPolicyVersion`) were not individually triggered. They share the same field mapping, so risk is low, but they are unverified.
+- Latency was measured once, so it is a single observation, not a distribution.
 - False positive rate and alert volume are not measured. They are blocked on real traffic, and no figures are claimed here.
 
-## 5. Tuning notes
+## 6. Tuning notes
 
-- One console action can produce several CloudTrail events, so alert suppression is needed. Suggested: suppress by `aws.cloudtrail.user_identity.arn` over 1 hour.
+- One console action can produce several CloudTrail events, so alert suppression is needed. The live rule suppresses by `aws.cloudtrail.user_identity.arn` over 1 hour.
 - Expected false positives: administrators and infrastructure-as-code pipelines making planned permission changes. Exclude known automation roles once they are identified in real data.
 - Severity is medium. Raise it where the actor is a root user, an identity with no MFA, or a policy granting `*:*`.
 
-## 6. Redaction
+## 7. Redaction
 
 Account ID, access key IDs and source IPs are removed from this document. Do not paste raw `event.original` into the public repo.
