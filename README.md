@@ -82,10 +82,10 @@ This folder contains:
 
 | # | Rule | ATT&CK Technique | Tactic | Status |
 |---|---|---|---|---|
-| 1 | AWS Root Account Usage | T1078.004 | Initial Access / Persistence / Privilege Escalation / Defense Evasion | ✅ Validated (baseline + live root login test) |
-| 2 | AWS IAM Policy Created, Attached or Modified | T1098.003 | Persistence / Privilege Escalation | ✅ Validated (field check + CreatePolicy trigger test) |
+| 1 | AWS Root Account Usage | T1078.004 | Initial Access / Persistence / Privilege Escalation / Defense Evasion | ✅ Live in Kibana with alert suppression (root login test: 1 alert, 28 suppressed) |
+| 2 | AWS IAM Policy Created, Attached or Modified | T1098.003 | Persistence / Privilege Escalation | ✅ Live in Kibana with alert suppression (CreatePolicy test alerted, ~7m35s event to alert) |
 
-Both cloud rules are validated at the query level against live CloudTrail data. They are not yet imported into Kibana as live detection rules; alert suppression is being planned first, because a single root login produced 100+ CloudTrail events. See [`cloud-detection-lab/`](cloud-detection-lab/) for the pipeline, secrets handling and gotchas.
+Both cloud rules are imported into Kibana as live detection rules, validated against real CloudTrail data and trigger-tested end to end. Alert suppression (per identity ARN, 1 hour) was added because a single root login produces dozens of CloudTrail events. See [`cloud-detection-lab/`](cloud-detection-lab/) for the pipeline, secrets handling and gotchas, and the validation docs for the test evidence.
 
 ---
 
@@ -141,7 +141,7 @@ Python is used only where it solves a Detection Engineering problem — not as a
 
 [`docs/detection_engineering_metrics.md`](docs/detection_engineering_metrics.md) separates what can be measured honestly from what cannot yet:
 
-- **Measured:** ATT&CK coverage (6 of 14 tactics on the Windows side) and detection latency (~3m49s from trigger to alert on rule #11)
+- **Measured:** ATT&CK coverage (6 of 14 tactics on the Windows side) and detection latency: ~3m49s from trigger to alert on Windows rule #11, and ~7m35s from CloudTrail event to alert on the AWS IAM rule (about 2m36s delivery and ingest plus the 5-minute rule schedule). Each is a single observation.
 - **Blocked on real traffic, deliberately not claimed:** alert volume, false positive rate, precision
 
 ---
@@ -166,7 +166,7 @@ Every project includes documentation covering:
 - ✅ Detection Quality documentation — 11 of 11 rules documented
 - ✅ Detection Engineering Metrics methodology — coverage and latency measured; volume/FP/precision explicitly blocked on real traffic
 - ◐ Python Automation — alert enrichment v1 live; Sysmon parser has a known multi-line field limitation still to fix
-- ◐ Cloud Detection Engineering — AWS pipeline built, 2 detections validated; next: live Kibana import with alert suppression, further AWS rules, then Azure Entra ID
+- ◐ Cloud Detection Engineering — AWS pipeline built, 2 detections live in Kibana with alert suppression and validated end to end; next: further AWS rules (for example console login without MFA), then Azure Entra ID
 - ⬜ Portfolio Development — case studies, LinkedIn-ready presentation, resume/LinkedIn update
 
 ---
