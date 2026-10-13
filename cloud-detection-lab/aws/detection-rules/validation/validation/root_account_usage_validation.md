@@ -25,3 +25,30 @@ Outstanding backlog
  Consider alert suppression/grouping before going live, given the 128-events-per-login volume pattern observed here
  IAM policy change detection (next cloud rule candidate)
  Azure Entra ID detections, identity folded into this same lab
+ ## Live rule validation (Kibana Detection Engine)
+
+**Date:** 2026-10-13
+
+The rule was imported into Kibana as a Custom query rule and enabled.
+
+| Setting | Value |
+|---|---|
+| Index pattern | `logs-aws.cloudtrail-*` |
+| Query (KQL) | `aws.cloudtrail.user_identity.type : "Root"` |
+| Severity / risk score | High / 73 |
+| ATT&CK | T1078.004 (Initial Access) |
+| Schedule | every 5 minutes, 4 minute additional look-back |
+| Alert suppression | by `aws.cloudtrail.user_identity.arn`, per time period, 1 hour |
+| Missing suppression field | do not suppress (a root event is never hidden) |
+
+**Test:** one root console login.
+
+**Result:** 1 alert created, with 28 further alerts suppressed into it (29 matching events in total). The alert had category `authentication` and fired within the rule's schedule window.
+
+**Finding confirmed:** without suppression, one root login would have created dozens of near-identical alerts. The 1-hour suppression window turns one session into one alert while a second root login later the same day still alerts.
+
+**Not measured:**
+- Detection latency (root login time to alert) was not captured, so no figure is claimed.
+- False positive rate and alert volume remain unmeasured; they are blocked on real traffic.
+
+**Rule preview note:** the Kibana preview timed out over a 30-day range. It replays the rule every 5 minutes, so that is expected and not a rule problem. The query was validated in Discover and by the live test above.
