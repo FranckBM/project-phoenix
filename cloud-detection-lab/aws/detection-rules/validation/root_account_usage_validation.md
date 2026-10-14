@@ -21,11 +21,13 @@ Status
 AWS Root Account Usage Detected (T1078.004) — fully validated: written, baseline-confirmed, and now trigger-confirmed. First complete cloud detection in the portfolio, matching the same validation rigor applied to the 11 Windows rules.
 
 Outstanding backlog
- Import this rule into Kibana as a live Detection Engine rule (currently Sigma source + Discover-validated only, same state the Windows rules were in before API/UI import)
+   Import this rule into Kibana as a live Detection Engine rule (done 2026-10-13)
+   Alert suppression by identity ARN, 1 hour (done 2026-10-13)
  Consider alert suppression/grouping before going live, given the 128-events-per-login volume pattern observed here
- IAM policy change detection (next cloud rule candidate)
+ IAM policy change detection (done)
  Azure Entra ID detections, identity folded into this same lab
- ## Live rule validation (Kibana Detection Engine)
+
+## Live rule validation (Kibana Detection Engine)
 
 **Date:** 2026-10-13
 
@@ -37,7 +39,7 @@ The rule was imported into Kibana as a Custom query rule and enabled.
 | Query (KQL) | `aws.cloudtrail.user_identity.type : "Root"` |
 | Severity / risk score | High / 73 |
 | ATT&CK | T1078.004 (Initial Access) |
-| Schedule | every 5 minutes, 4 minute additional look-back |
+| Schedule | every 5 minutes, additional look-back 10 minutes (originally 4, raised on 2026-10-14) |
 | Alert suppression | by `aws.cloudtrail.user_identity.arn`, per time period, 1 hour |
 | Missing suppression field | do not suppress (a root event is never hidden) |
 
@@ -46,6 +48,8 @@ The rule was imported into Kibana as a Custom query rule and enabled.
 **Result:** 1 alert created, with 28 further alerts suppressed into it (29 matching events in total). The alert had category `authentication` and fired within the rule's schedule window.
 
 **Finding confirmed:** without suppression, one root login would have created dozens of near-identical alerts. The 1-hour suppression window turns one session into one alert while a second root login later the same day still alerts.
+
+**Look-back change (2026-10-14):** this rule was validated with a 4 minute additional look-back. Testing a sister rule showed CloudTrail delivery taking about 5 minutes, long enough for an event to miss the 9 minute window before any run saw it. The look-back was raised to 10 minutes. The live test above ran on the original setting and was not repeated.
 
 **Not measured:**
 - Detection latency (root login time to alert) was not captured, so no figure is claimed.

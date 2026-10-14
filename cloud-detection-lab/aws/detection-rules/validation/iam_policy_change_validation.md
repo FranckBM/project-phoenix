@@ -49,8 +49,10 @@ The rule was imported into Kibana as a Custom query rule and enabled.
 | Query (KQL) | `event.provider : "iam.amazonaws.com" and event.action : (CreatePolicy or CreatePolicyVersion or SetDefaultPolicyVersion or AttachUserPolicy or AttachRolePolicy or AttachGroupPolicy or PutUserPolicy or PutRolePolicy or PutGroupPolicy)` |
 | Severity / risk score | Medium / 47 |
 | ATT&CK | T1098.003 (Persistence, Privilege Escalation) |
-| Schedule | every 5 minutes, 4 minute additional look-back |
+| Schedule | every 5 minutes, additional look-back 10 minutes (originally 4, raised on 2026-10-14, see note below) |
 | Alert suppression | by `aws.cloudtrail.user_identity.arn`, per time period, 1 hour |
+
+**Look-back change (2026-10-14):** the rule was validated on 2026-10-13 with a 4 minute additional look-back. Testing a sister rule on 2026-10-14 showed CloudTrail delivery taking about 5 minutes, long enough for an event to fall outside a 9 minute window (5 minute interval plus 4 minute look-back) before any run saw it. This rule's look-back was therefore raised to 10 minutes. The 2026-10-13 test below ran on the original 4 minute setting and was not repeated after the change.
 
 **Test:** a harmless customer-managed policy (`s3:ListAllMyBuckets` only, not attached to any identity) was created and then deleted in the console.
 
