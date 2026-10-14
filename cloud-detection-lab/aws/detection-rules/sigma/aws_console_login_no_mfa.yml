@@ -1,0 +1,26 @@
+title: AWS Console Login Without MFA
+id: 3f6b1c52-8d0a-4e57-9a1e-6c2d7b94f0a3
+status: experimental
+description: Detects a successful AWS Management Console sign-in by an IAM user where multi-factor authentication was not used. Console access without MFA leaves the account exposed to password theft or reuse.
+references:
+    - https://attack.mitre.org/techniques/T1078/004/
+author: Franck
+date: 2026-10-14
+tags:
+    - attack.initial_access
+    - attack.t1078.004
+logsource:
+    product: aws
+    service: cloudtrail
+detection:
+    selection:
+        event.provider: 'signin.amazonaws.com'
+        event.action: 'ConsoleLogin'
+        event.outcome: 'success'
+        aws.cloudtrail.user_identity.type: 'IAMUser'
+        aws.cloudtrail.console_login.additional_eventdata.mfa_used: false
+    condition: selection
+falsepositives:
+    - Break-glass or legacy IAM users that legitimately have no MFA device (should be rare and documented)
+    - Lab or test accounts
+level: medium
