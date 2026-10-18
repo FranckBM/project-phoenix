@@ -74,7 +74,7 @@ This folder contains:
 | 8 | Scheduled Task Persistence | T1053.005 | Persistence / Execution | ✅ Validated | ✅ |
 | 9 | Office → PowerShell | T1059.001 / T1204.002 | Execution | ✅ Validated, imported | ✅ |
 | 10 | Suspicious Temp File Write | T1082 / T1217 | Discovery | ✅ Validated | ✅ |
-| 11 | SMB Admin Share Access via net.exe | T1021.002 | Lateral Movement | ✅ Validated, imported, alert fired | ✅ |
+| 11 | SMB Admin Share Access via net.exe | T1021.002 | Lateral Movement | ✅ Validated, imported, alert fired; alert suppression added 2026-10-18 (3 test events gave 2 alerts) | ✅ |
 
 **11 of 10 target rules validated — target exceeded.** All 11 have a Detection Quality write-up (telemetry, test method, false positives, tuning, coverage, investigation, response). Writing them surfaced real findings, for example rules #1/#3 miss the RunOnce key and rule #10's inherited ATT&CK tags did not match its logic.
 
