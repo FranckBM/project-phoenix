@@ -104,7 +104,7 @@ Elastic Serverless Forwarder (Lambda)
 Elasticsearch data stream logs-aws.cloudtrail-default
 ```
 
-Three real pipeline gotchas were found and documented (greyed-out managed integration mode on serverless, a separate S3 permission parameter behind a 403, and CloudTrail data sitting unparsed because integration assets were never installed). Azure Entra ID detections are next. Real endpoints, account IDs and API keys are never committed; only a placeholder template is.
+Four real pipeline gotchas were found and documented (greyed-out managed integration mode on serverless, a separate S3 permission parameter behind a 403, CloudTrail data sitting unparsed because integration assets were never installed, and CloudTrail delivery taking longer than a rule's look-back window). Azure Entra ID detections are next.
 
 ---
 
@@ -157,6 +157,9 @@ Every project includes documentation covering:
 - Validation
 - Lessons learned (including infrastructure gotchas — several real pipeline gaps have been found and fixed over the course of this project, not just clean first-try successes)
 
+**Case studies:**
+- [A correct rule that missed its own test](writeups/case-study-cloudtrail-delivery-vs-rule-lookback.md) — CloudTrail delivery delay vs. a rule's look-back window, found by a live test and fixed on all three AWS rules
+
 ---
 
 ## 🎯 Current Progress
@@ -168,7 +171,7 @@ Every project includes documentation covering:
 - ✅ Detection Engineering Metrics methodology — coverage and latency measured; volume/FP/precision explicitly blocked on real traffic
 - ◐ Python Automation — alert enrichment v1 live; Sysmon parser has a known multi-line field limitation still to fix
 - ◐ Cloud Detection Engineering — AWS pipeline built, 3 detections live in Kibana with alert suppression and validated end to end; next: Azure Entra ID, plus further AWS rules as time allows
-- ⬜ Portfolio Development — case studies, LinkedIn-ready presentation, resume/LinkedIn update
+- ◐ Portfolio Development — first case study written; more case studies, LinkedIn-ready presentation and resume/LinkedIn update still to do
 
 ---
 
