@@ -1,0 +1,12 @@
+# Copy to config.yaml (which is gitignored) and fill in real values.
+# Never commit config.yaml or state.json.
+tenant_id: "<TENANT_ID>"
+client_id: "<APP_CLIENT_ID>"
+client_secret: "<APP_CLIENT_SECRET>"
+elastic_url: "<ELASTICSEARCH_ENDPOINT_URL>"
+elastic_api_key: "<ELASTIC_API_KEY_ENCODED>"
+
+# Optional (defaults shown)
+# data_stream: "logs-azure.entra_audit-default"
+# lookback_minutes: 15      # overlap on every poll; duplicates are harmless (same _id)
+# first_run_hours: 24       # how far back the very first run looks
