@@ -31,12 +31,18 @@ Project-Phoenix/
 │   ├── sigma/                # Windows Sigma source rules
 │   ├── elastic/              # Converted/Kibana-imported rule artifacts
 │   └── validation/           # Rule validation notes and test results
-├── cloud-detection-lab/      # AWS CloudTrail detection lab (own README inside)
-│   └── aws/
+├── cloud-detection-lab/      # AWS and Azure detection labs (own README inside)
+│   ├── aws/
+│   │   ├── config.yaml.template   # Placeholders only; the real config.yaml is gitignored
+│   │   └── detection-rules/
+│   │       ├── sigma/             # AWS Sigma rules
+│   │       └── validation/        # AWS rule validation docs
+│   └── azure/
+│       ├── ingest_entra_audit.py  # Microsoft Graph audit log -> Elasticsearch ingest
 │       ├── config.yaml.template   # Placeholders only; the real config.yaml is gitignored
 │       └── detection-rules/
-│           ├── sigma/             # AWS Sigma rules
-│           └── validation/        # AWS rule validation docs
+│           ├── sigma/             # Azure Sigma rules
+│           └── validation/        # Azure rule validation docs
 ├── docs/
 │   ├── detection-quality/    # Per-rule quality write-ups (telemetry, FPs, tuning, coverage)
 │   ├── detection_engineering_metrics.md
@@ -88,6 +94,14 @@ This folder contains:
 
 All three cloud rules are imported into Kibana as live detection rules, validated against real CloudTrail data and trigger-tested end to end. Alert suppression (per identity ARN, 1 hour) was added because a single root login produces dozens of CloudTrail events. The first no-MFA test missed because CloudTrail delivery took about 5 minutes, longer than the rule's 4 minute look-back, so the look-back was raised to 10 minutes on all three rules. See [`cloud-detection-lab/`](cloud-detection-lab/) for the pipeline, secrets handling and gotchas, and the validation docs for the test evidence.
 
+### ATT&CK Coverage Matrix — Azure (Cloud Detection Lab)
+
+| # | Rule | ATT&CK Technique | Tactic | Status |
+|---|---|---|---|---|
+| 1 | Entra ID Application Credentials Changed | T1098.001 | Persistence / Privilege Escalation | ✅ Live in Kibana with alert suppression (alerted ~5m32s event to alert; credential removals also match) |
+
+The Azure side runs on Entra ID audit logs only. The lab tenant is on the Free tier, and exporting sign-in logs needs a P1 or P2 licence, so sign-in based detections are out of scope for now. A wildcard filter meant to separate credential additions from removals returned nothing on a populated field, so the rule currently covers both; the cause is not yet known and is recorded in the validation doc.
+
 ---
 
 ## ☁️ Cloud Detection Lab
@@ -104,7 +118,9 @@ Elastic Serverless Forwarder (Lambda)
 Elasticsearch data stream logs-aws.cloudtrail-default
 ```
 
-Four real pipeline gotchas were found and documented (greyed-out managed integration mode on serverless, a separate S3 permission parameter behind a 403, CloudTrail data sitting unparsed because integration assets were never installed, and CloudTrail delivery taking longer than a rule's look-back window). Azure Entra ID detections are next.
+Four real pipeline gotchas were found and documented (greyed-out managed integration mode on serverless, a separate S3 permission parameter behind a 403, CloudTrail data sitting unparsed because integration assets were never installed, and CloudTrail delivery taking longer than a rule's look-back window).
+
+The Azure side pulls Entra ID audit logs from Microsoft Graph with a small Python script (read-only app registration, client credentials) and indexes them into a data stream. Real tenant IDs, client secrets, endpoints and API keys are never committed; only placeholder templates are.
 
 ---
 
@@ -134,6 +150,7 @@ Python is used only where it solves a Detection Engineering problem — not as a
 
 **Current tools:**
 - **Sysmon log parser** — extracts `Image`/`TargetObject`/`CommandLine` from a raw Sysmon export into a clean CSV
+- **Entra audit log ingest** — polls Microsoft Graph audit logs and bulk-indexes them into Elasticsearch, idempotently (event id as document id, so overlapping polls cause no duplicates); tested against mocked Graph and Elastic responses, then live
 - **Alert enrichment script** — takes a raw detection alert and enriches it with ATT&CK technique/tactic metadata and host/user context, producing a readable, analyst-ready alert summary. Currently uses static lookup tables as a stand-in for a real CMDB/asset inventory; a natural next step is hash/IP reputation lookups and live Kibana API integration.
 
 ---
@@ -142,7 +159,7 @@ Python is used only where it solves a Detection Engineering problem — not as a
 
 [`docs/detection_engineering_metrics.md`](docs/detection_engineering_metrics.md) separates what can be measured honestly from what cannot yet:
 
-- **Measured:** ATT&CK coverage (6 of 14 tactics on the Windows side) and detection latency: ~3m49s from trigger to alert on Windows rule #11, and ~7m35s and ~6m44s from CloudTrail event to alert on two AWS rules. CloudTrail delivery and ingest alone varied between about 2m36s and 5m06s, on top of the 5-minute rule schedule. Each figure is a single observation.
+- **Measured:** ATT&CK coverage (6 of 14 tactics on the Windows side) and detection latency: ~3m49s from trigger to alert on Windows rule #11, ~7m35s and ~6m44s from CloudTrail event to alert on two AWS rules, and ~5m32s from Entra audit event to alert on the Azure rule. CloudTrail delivery and ingest alone varied between about 2m36s and 5m06s, on top of the 5-minute rule schedule. Each figure is a single observation.
 - **Blocked on real traffic, deliberately not claimed:** alert volume, false positive rate, precision
 
 ---
@@ -170,7 +187,7 @@ Every project includes documentation covering:
 - ✅ Detection Quality documentation — 11 of 11 rules documented
 - ✅ Detection Engineering Metrics methodology — coverage and latency measured; volume/FP/precision explicitly blocked on real traffic
 - ◐ Python Automation — alert enrichment v1 live; Sysmon parser has a known multi-line field limitation still to fix
-- ◐ Cloud Detection Engineering — AWS pipeline built, 3 detections live in Kibana with alert suppression and validated end to end; next: Azure Entra ID, plus further AWS rules as time allows
+- ◐ Cloud Detection Engineering — AWS pipeline built with 3 detections live; Azure Entra ID audit-log pipeline built with 1 detection live (4 cloud detections, all with alert suppression and validated end to end); next: further Azure and AWS rules as time allows
 - ◐ Portfolio Development — first case study written; more case studies, LinkedIn-ready presentation and resume/LinkedIn update still to do
 
 ---
@@ -184,6 +201,7 @@ Every project includes documentation covering:
 - Sysmon / Windows Event Logs
 - MITRE ATT&CK
 - AWS (CloudTrail, S3, SQS, Lambda, IAM)
+- Azure (Microsoft Entra ID audit logs, Microsoft Graph)
 
 ---
 
