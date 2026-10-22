@@ -63,9 +63,11 @@ Result: the rule alerted. `kibana.alert.suppression.docs_count` was 0, as expect
 
 The first stage combines the time Graph took to expose the event with the 120 second polling interval, and the two cannot be separated from this run.
 
+**Removal test (same day):** the throwaway secret was then deleted (event at 12:30:58 local time). No new alert row appeared. Because the rule suppresses by `user.name` for 1 hour, the event was added to the existing alert: `kibana.alert.suppression.docs_count` rose from 0 to 1, with the suppression window running from 12:03:38 (the addition) to 12:30:58 (the removal). So a removal matches the rule, as predicted from section 4, and the alert does not say which kind of change it was.
+
 ## 6. Not yet tested
 
-- Credential removal: expected to alert, because the activity name is identical, but not triggered.
+- Credential removal: confirmed to match the rule (see section 5), so additions and removals are not separated. Removal was tested only once, as the last of two credentials changes by the same user within the suppression hour.
 - Credentials added directly to a service principal (rather than the application object) are a different operation and were not tested.
 - Certificates (as opposed to client secrets) were not tested.
 - No role-assignment rule exists yet; that event was never generated in this lab.
@@ -76,6 +78,7 @@ The first stage combines the time Graph took to expose the event with the 120 se
 ## 7. Tuning notes
 
 - Expected false positives: planned secret rotation by application owners and deployment pipelines. Exclude known owners once identified in real data.
+- Suppression by user for 1 hour folds a later change by the same user into the first alert, as the removal test showed. An analyst should check the alert's suppressed document count and window, not just the first event.
 - Severity is medium. Raise it where the application holds high Graph permissions or the initiator is not the application's owner.
 - Keep the additional look-back above the polling interval plus the observed Graph delay. 15 minutes is generous against the 2m18s observed, but one observation does not prove a worst case.
 
