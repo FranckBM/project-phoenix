@@ -100,8 +100,9 @@ All three cloud rules are imported into Kibana as live detection rules, validate
 |---|---|---|---|---|
 | 1 | Entra ID Application Credentials Changed | T1098.001 | Persistence / Privilege Escalation | ✅ Live in Kibana with alert suppression (alerted ~5m32s event to alert; credential removals also match) |
 
-The Azure side runs on Entra ID audit logs only. The lab tenant is on the Free tier, and exporting sign-in logs needs a P1 or P2 licence, so sign-in based detections are out of scope for now. A wildcard filter meant to separate credential additions from removals returned nothing on a populated field, so the rule currently covers both; the cause is not yet known and is recorded in the validation doc.
+| 2 | Entra ID Directory Role Assigned to User | T1098.003 | Persistence / Privilege Escalation | ✅ Live in Kibana, no suppression by design (alerted ~4m00s event to alert; role removal correctly did not alert) |
 
+The role assignment rule deliberately has no alert suppression: suppressing by actor would fold a later high-privilege assignment (for example Global Administrator) into an earlier low-privilege alert from the same admin, hiding the escalation the rule exists to catch.
 ---
 
 ## ☁️ Cloud Detection Lab
@@ -159,7 +160,7 @@ Python is used only where it solves a Detection Engineering problem — not as a
 
 [`docs/detection_engineering_metrics.md`](docs/detection_engineering_metrics.md) separates what can be measured honestly from what cannot yet:
 
-- **Measured:** ATT&CK coverage (6 of 14 tactics on the Windows side) and detection latency: ~3m49s from trigger to alert on Windows rule #11, ~7m35s and ~6m44s from CloudTrail event to alert on two AWS rules, and ~5m32s from Entra audit event to alert on the Azure rule. CloudTrail delivery and ingest alone varied between about 2m36s and 5m06s, on top of the 5-minute rule schedule. Each figure is a single observation.
+- **Measured:** ATT&CK coverage (6 of 14 tactics on the Windows side) and detection latency: ~3m49s from trigger to alert on Windows rule #11, ~7m35s and ~6m44s from CloudTrail event to alert on two AWS rules, and ~5m32s and ~4m00s from Entra audit event to alert on the two Azure rules. CloudTrail delivery and ingest alone varied between about 2m36s and 5m06s, on top of the 5-minute rule schedule. Each figure is a single observation.
 - **Blocked on real traffic, deliberately not claimed:** alert volume, false positive rate, precision
 
 ---
@@ -187,7 +188,7 @@ Every project includes documentation covering:
 - ✅ Detection Quality documentation — 11 of 11 rules documented
 - ✅ Detection Engineering Metrics methodology — coverage and latency measured; volume/FP/precision explicitly blocked on real traffic
 - ◐ Python Automation — alert enrichment v1 live; Sysmon parser has a known multi-line field limitation still to fix
-- ◐ Cloud Detection Engineering — AWS pipeline built with 3 detections live; Azure Entra ID audit-log pipeline built with 1 detection live (4 cloud detections, all with alert suppression and validated end to end); next: further Azure and AWS rules as time allows
+- ◐ Cloud Detection Engineering — AWS pipeline built with 3 detections live; Azure Entra ID audit-log pipeline built with 2 detections live (5 cloud detections, 16 in total, all validated end to end); next: further Azure and AWS rules as time allows
 - ◐ Portfolio Development — first case study written; more case studies, LinkedIn-ready presentation and resume/LinkedIn update still to do
 
 ---
