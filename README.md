@@ -30,8 +30,8 @@ Project-Phoenix/
 ├── detection-rules/
 │   ├── sigma/                # Windows Sigma source rules
 │   ├── elastic/              # Converted/Kibana-imported rule artifacts
-│   └── validation/           # Rule validation notes and test results
-├── cloud-detection-lab/      # AWS and Azure detection labs (own README inside)
+│   └── validation/           # Rule validation notes and test resultsgit 
+├── cloud-detection-lab/      # # AWS and Azure detection labs (README in aws/ and azure/)
 │   ├── aws/
 │   │   ├── config.yaml.template   # Placeholders only; the real config.yaml is gitignored
 │   │   └── detection-rules/

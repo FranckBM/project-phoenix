@@ -1,6 +1,6 @@
 # Validation: Entra ID Application Credentials Changed
 
-- **Rule:** `azure_entra_app_credential_added.yml` (id `f97a3276-c7fa-421a-b4eb-3a193d17edcf`)
+- **Rule:** `azure_entra_app_credential_changed.yml` (id `f97a3276-c7fa-421a-b4eb-3a193d17edcf`)
 - **ATT&CK:** T1098.001 (Account Manipulation: Additional Cloud Credentials), Persistence
 - **Date validated:** 2026-10-22
 - **Data source:** Microsoft Entra ID audit logs -> Microsoft Graph (`/auditLogs/directoryAudits`) -> `ingest_entra_audit.py` (polling) -> `logs-azure.entra_audit-default`

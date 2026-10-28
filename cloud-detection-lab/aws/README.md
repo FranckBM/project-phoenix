@@ -1,18 +1,18 @@
-# Cloud Detection Lab
+# Cloud Detection Lab — AWS (CloudTrail)
 
-Extension of Project Phoenix into cloud telemetry — AWS first, Azure Entra ID
-planned next. Same philosophy as the Windows lab: build the pipeline, break
-it, fix it, document the real gotchas, then write detections against real
-data rather than assumptions.
+The AWS half of the Cloud Detection Lab (the Azure Entra ID half is in
+[`../azure/`](../azure/README.md)). Same philosophy as the Windows lab: build
+the pipeline, break it, fix it, document the real gotchas, then write
+detections against real data rather than assumptions.
 
 ## Structure
 
 ```
-cloud-detection-lab/
-  aws/
-    config.yaml.template       # Elastic Serverless Forwarder config (placeholder values — see below)
-    detection-rules/
-      sigma/                   # Sigma rules for AWS CloudTrail detections
+aws/
+  config.yaml.template         # Elastic Serverless Forwarder config (placeholder values — see below)
+  detection-rules/
+    sigma/                     # Sigma rules for AWS CloudTrail detections
+    validation/                # Live test evidence per rule
 ```
 
 ## AWS pipeline
@@ -89,15 +89,38 @@ Note this also matters for timing: the ingest pipeline only applies to
 documents indexed *after* it exists. Data ingested before the fix stays
 unparsed permanently unless manually reprocessed.
 
+**4. CloudTrail delivery can outrun a rule's look-back window.** The first
+live test of the no-MFA rule missed: CloudTrail took about 5 minutes to
+deliver the login event, longer than the rule's 4-minute look-back, so the
+event was indexed after the window that should have caught it had already
+run. The rule logic was correct; the timing was not. Look-back was raised to
+10 minutes on all three rules. Written up as a case study:
+[A correct rule that missed its own test](../../writeups/case-study-cloudtrail-delivery-vs-rule-lookback.md).
+
 ## Detections
 
-| Rule | ATT&CK Technique | Status |
-|---|---|---|
-| AWS Root Account Usage Detected | T1078.004 | Built, validated with zero false-positive baseline (0 root events in normal account activity) |
+All three rules are live in Kibana as Detection Engine rules (5-minute
+schedule, 10-minute look-back), with alert suppression by
+`aws.cloudtrail.user_identity.arn` for 1 hour, and validated end to end
+against real CloudTrail data.
+
+| # | Rule | ATT&CK | Severity | Live test | Validation |
+|---|---|---|---|---|---|
+| 1 | AWS Root Account Usage | T1078.004 | High / 73 | 0 root events in the baseline; one root console session gave 1 alert with 28 suppressed (29 events) | [validation](detection-rules/validation/root_account_usage_validation.md) |
+| 2 | AWS IAM Policy Created, Attached or Modified | T1098.003 | Medium / 47 | A harmless `CreatePolicy` gave 1 alert, ~7m35s event to alert | [validation](detection-rules/validation/iam_policy_change_validation.md) |
+| 3 | AWS Console Login Without MFA | T1078.004 | Medium / 47 | Successful IAM user login without MFA gave 1 alert, ~6m44s event to alert; a login with MFA correctly did not alert | [validation](detection-rules/validation/aws_console_login_no_mfa_validation.md) |
+
+Latency figures are single observations. CloudTrail delivery and ingest alone
+varied between about 2m36s and 5m06s, on top of the 5-minute rule schedule.
+
+## Cost
+
+Management events only, low-volume S3/SQS/Lambda usage: expected to stay
+near $0/month, with AWS budget alerts as a safety net.
 
 ## Next steps
 
-- Validate the root-account rule with a real, deliberate root-login test event
-- IAM policy change detection
-- Azure Entra ID detections (suspicious auth, privilege/role assignment)
-- Fold identity detections into this lab rather than treating them as a separate project
+- More AWS detections as time allows (for example access key creation,
+  CloudTrail tampering)
+- Optionally reprocess the ~2 weeks of CloudTrail data that landed unparsed
+  before gotcha #3 was fixed
