@@ -31,7 +31,7 @@ Project-Phoenix/
 │   ├── sigma/                # Windows Sigma source rules
 │   ├── elastic/              # Converted/Kibana-imported rule artifacts
 │   └── validation/           # Rule validation notes and test resultsgit 
-├── cloud-detection-lab/      # # AWS and Azure detection labs (README in aws/ and azure/)
+├── cloud-detection-lab/      # AWS and Azure detection labs (README in aws/ and azure/)
 │   ├── aws/
 │   │   ├── config.yaml.template   # Placeholders only; the real config.yaml is gitignored
 │   │   └── detection-rules/
@@ -99,10 +99,10 @@ All three cloud rules are imported into Kibana as live detection rules, validate
 | # | Rule | ATT&CK Technique | Tactic | Status |
 |---|---|---|---|---|
 | 1 | Entra ID Application Credentials Changed | T1098.001 | Persistence / Privilege Escalation | ✅ Live in Kibana with alert suppression (alerted ~5m32s event to alert; credential removals also match) |
-
 | 2 | Entra ID Directory Role Assigned to User | T1098.003 | Persistence / Privilege Escalation | ✅ Live in Kibana, no suppression by design (alerted ~4m00s event to alert; role removal correctly did not alert) |
 
-The role assignment rule deliberately has no alert suppression: suppressing by actor would fold a later high-privilege assignment (for example Global Administrator) into an earlier low-privilege alert from the same admin, hiding the escalation the rule exists to catch.
+The Azure side runs on Entra ID audit logs only. The lab tenant is on the Free tier, and exporting sign-in logs needs a P1 or P2 licence, so sign-in based detections are out of scope for now. A wildcard filter meant to separate credential additions from removals returned nothing on a populated field, so the credentials rule currently covers both; the cause is not yet confirmed and is recorded in the validation doc. The role assignment rule deliberately has no alert suppression: suppressing by actor would fold a later high-privilege assignment (for example Global Administrator) into an earlier low-privilege alert from the same admin, hiding the escalation the rule exists to catch.
+
 ---
 
 ## ☁️ Cloud Detection Lab
