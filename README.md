@@ -177,7 +177,7 @@ Every project includes documentation covering:
 
 **Case studies:**
 - [A correct rule that missed its own test](writeups/case-study-cloudtrail-delivery-vs-rule-lookback.md) — CloudTrail delivery delay vs. a rule's look-back window, found by a live test and fixed on all three AWS rules
-   - [Logs that arrived perfectly and could not be detected on](writeups/case-study-cloudtrail-data-unparsed.md) — CloudTrail data landed unparsed for ~41 hours because integration assets were never installed; also how a remembered "two weeks" turned out to be 41 hours
+- [Logs that arrived perfectly and could not be detected on](writeups/case-study-cloudtrail-data-unparsed.md) — CloudTrail data landed unparsed for ~41 hours because integration assets were never installed; also how a remembered "two weeks" turned out to be 41 hours
 
 ---
 

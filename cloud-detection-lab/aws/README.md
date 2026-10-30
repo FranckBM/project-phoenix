@@ -122,5 +122,5 @@ near $0/month, with AWS budget alerts as a safety net.
 
 - More AWS detections as time allows (for example access key creation,
   CloudTrail tampering)
-- Optionally reprocess the ~41 hours (1,879 documents).
-  before gotcha #3 was fixed
+- Optionally reprocess the ~41 hours (1,879 documents) of CloudTrail data
+  that landed unparsed before gotcha #3 was fixed
