@@ -1,0 +1,37 @@
+{
+    "@timestamp": "2026-10-18T14:21:09.512Z",
+    "kibana.alert.original_time": "2026-10-18T14:17:20.000Z",
+    "kibana.alert.rule.name": "SMB Admin Share Access via net.exe",
+    "kibana.alert.severity": "medium",
+    "kibana.alert.rule.threat": [
+        {
+            "framework": "MITRE ATT&CK",
+            "tactic": {
+                "id": "TA0008",
+                "name": "Lateral Movement"
+            },
+            "technique": [
+                {
+                    "id": "T1021",
+                    "name": "Remote Services",
+                    "subtechnique": [
+                        {
+                            "id": "T1021.002",
+                            "name": "SMB/Windows Admin Shares"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "host": {
+        "name": "win11-rebuild"
+    },
+    "winlog": {
+        "event_data": {
+            "User": "WIN11-REBUILD\\vboxuser",
+            "Image": "C:\\Windows\\System32\\net.exe",
+            "CommandLine": "net use \\\\localhost\\ADMIN$ /u:WIN11-REBUILD\\vboxuser"
+        }
+    }
+}

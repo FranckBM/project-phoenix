@@ -1,0 +1,25 @@
+name: Python Tools Tests
+
+on:
+  push:
+    paths:
+      - 'python-tools/**'
+  pull_request:
+    paths:
+      - 'python-tools/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run enrichment tests
+        working-directory: python-tools
+        run: python -m unittest discover tests -v
