@@ -150,9 +150,9 @@ Documentation
 Python is used only where it solves a Detection Engineering problem — not as a general-purpose scripting exercise.
 
 **Current tools:**
-- **Sysmon log parser** — extracts `Image`/`TargetObject`/`CommandLine` from a raw Sysmon export into a clean CSV
+- **Alert enrichment (v2)** — takes detection alerts and adds ATT&CK technique/tactic context plus host and user context, producing a readable, analyst-ready summary or JSON. Accepts simple alert JSON, real Kibana Security alert documents (nested or flattened), Elasticsearch search responses and NDJSON; reads ECS fields first, then this lab's raw Winlogbeat fields. Covered by 14 unit tests that run in GitHub Actions on every change. Host and user context still come from static lookup tables as a stand-in for a real CMDB; natural next steps are hash/IP reputation lookups and pulling alerts straight from the Kibana API. See [`python-tools/README.md`](python-tools/README.md).
 - **Entra audit log ingest** — polls Microsoft Graph audit logs and bulk-indexes them into Elasticsearch, idempotently (event id as document id, so overlapping polls cause no duplicates); tested against mocked Graph and Elastic responses, then live
-- **Alert enrichment script** — takes a raw detection alert and enriches it with ATT&CK technique/tactic metadata and host/user context, producing a readable, analyst-ready alert summary. Currently uses static lookup tables as a stand-in for a real CMDB/asset inventory; a natural next step is hash/IP reputation lookups and live Kibana API integration.
+- **Sysmon log parser** — extracts `TimeCreated`/`Image`/`TargetObject` from a text export of Sysmon events into a CSV; values that wrap onto a second line in the export are cut off (known limitation)
 
 ---
 
@@ -188,7 +188,7 @@ Every project includes documentation covering:
 - ✅ Detection-as-Code — CI linting, Elastic Detection Engineering API round-trip proven (twice via API, once via Kibana UI)
 - ✅ Detection Quality documentation — 11 of 11 rules documented
 - ✅ Detection Engineering Metrics methodology — coverage and latency measured; volume/FP/precision explicitly blocked on real traffic
-- ◐ Python Automation — alert enrichment v1 live; Sysmon parser has a known multi-line field limitation still to fix
+- ✅ Python Automation — alert enrichment v2: Kibana alert input, full ATT&CK coverage, tests and CI; Sysmon parser has a known multi-line field limitation.
 - ◐ Cloud Detection Engineering — AWS pipeline built with 3 detections live; Azure Entra ID audit-log pipeline built with 2 detections live (5 cloud detections, 16 in total, all validated end to end); next: further Azure and AWS rules as time allows
 - ◐ Portfolio Development — first case study written; more case studies, LinkedIn-ready presentation and resume/LinkedIn update still to do
 
